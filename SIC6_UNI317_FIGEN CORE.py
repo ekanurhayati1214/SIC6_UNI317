@@ -6,11 +6,11 @@ import network
 import urequests
 
 # 🔹 Konfigurasi WiFi
-SSID = "Remukan_peyek"
-PASSWORD = "Bosse12345"
+SSID = "Siape"
+PASSWORD = "gitaaa26"
 
 # 🔹 Konfigurasi API Ubidots
-UBIDOTS_TOKEN = "BBUS-MxJqqKUKdVBnCtlmnWibz9Gotwwaxo"
+UBIDOTS_TOKEN = "BBUS-DRfFDUMilSnfdNoymtMcL741UKEUD"
 UBIDOTS_URL = "https://industrial.api.ubidots.com/api/v1.6/devices/IOT_ESP32_UNI317/"
 HEADERS = {
     "X-Auth-Token": UBIDOTS_TOKEN,
@@ -48,10 +48,14 @@ def send_data(temp, hum):
     }
     try:
         response = urequests.post(UBIDOTS_URL, json=data, headers=HEADERS)
-        print(response.text)
+        if response.status_code == 201 or response.status_code == 401:
+            print("Data berhasil dikirim ke Ubidots.")
+        else:
+            print("Gagal mengirim data:", response.status_code)
         response.close()
     except Exception as e:
         print("Error sending data:", e)
+
 
 # 🔹 Main Loop
 connect_wifi()
@@ -61,6 +65,9 @@ while True:
         dht_sensor.measure()
         temperature = dht_sensor.temperature()
         humidity = dht_sensor.humidity()
+        
+        print("Suhu:", temperature, "°C")
+        print("Kelembaban:", humidity, "%")
 
         # Kontrol LED
         led_red.value(1 if temperature < 35 or temperature > 60 else 0)
